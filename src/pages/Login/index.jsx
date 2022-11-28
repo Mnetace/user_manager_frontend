@@ -31,7 +31,7 @@ export const Login = () => {
   const onSubmit = async (values) => {
     const data = await dispatch(fetchAuth(values))
     if (!data.payload) {
-      alert('Failed to log in to MERN blog!')
+      alert('Failed to log in!')
     }
     if ('token' in data.payload) {
       window.localStorage.setItem('token', data.payload.token)
