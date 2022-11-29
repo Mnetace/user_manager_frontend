@@ -1,52 +1,58 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
-
 import axios from '../../axios'
 import styles from './Header.module.scss'
 
-export const Header = ({ checked, rerender, isAuth, logout }) => {
-  const dispatch = useDispatch()
-
+export const Header = ({ checked, rerender, isAuth, logout, dispatch }) => {
   const onClickLogout = () => {
     if (window.confirm('Are you sure want to log out?')) {
       dispatch(logout())
       window.localStorage.removeItem('token')
     }
   }
-
   const onClickRemove = () => {
-    checked.forEach((items) => {
-      if (window.confirm('Are you sure want to delete this user(s)?')) {
-        axios.delete(`/auth/${items}`)
-      }
-    })
-    rerender()
+    if (window.confirm('Are you sure want to delete this user(s)?')) {
+      checked.forEach((items) => {
+        axios.delete(`/auth/${items}`).then(() => {
+          rerender()
+        })
+      })
+    }
   }
-
-  const onClickBlock = () => {
+  const onClickBlock = async () => {
     if (window.confirm('Are you sure want to block this user(s)?')) {
-      checked.forEach((items) => {
-        axios.patch(`/auth/block/${items}`)
+      await checked.forEach((items) => {
+        axios
+          .patch(`/auth/block/${items}`)
+          .then(() => {
+            rerender()
+          })
+          .then(() => {
+            axios.get(`/auth/me`).then((data) => {
+              if (data.data.block) {
+                rerender()
+                dispatch(logout())
+                window.localStorage.removeItem('token')
+              }
+            })
+          })
       })
     }
-    rerender()
   }
-
-  const onClickUnblock = () => {
+  const onClickUnblock = async () => {
     if (window.confirm('Are you sure want to unblock this user(s)?')) {
-      checked.forEach((items) => {
-        axios.patch(`/auth/unblock/${items}`)
+      await checked.forEach((items) => {
+        axios.patch(`/auth/unblock/${items}`).then(() => {
+          rerender()
+        })
       })
     }
-    rerender()
   }
 
   return (

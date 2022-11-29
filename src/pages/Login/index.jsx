@@ -1,16 +1,12 @@
-// importing basic hooks from libraries
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
-
 import { fetchAuth, selectIsAuth } from '../../redux/slices/auth'
-
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
 import { useForm } from 'react-hook-form'
-
 import styles from './Login.module.scss'
 
 export const Login = () => {

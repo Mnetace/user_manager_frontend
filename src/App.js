@@ -17,12 +17,11 @@ function App() {
   const isAuth = useSelector(selectIsAuth)
   const isBlock = useSelector(selectIsBlock)
   const token = window.localStorage.getItem('token')
-
   const [checked, setChecked] = useState([])
   const [rows, setRows] = useState([])
 
-  const rerender = () => {
-    axios.get(`/auth/all`).then(({ data }) => {
+  const rerender = async () => {
+    await axios.get(`/auth/all`).then(({ data }) => {
       setRows(
         data.map((items) => {
           items.createdAt = new Date(items.createdAt).toLocaleString()
@@ -40,7 +39,8 @@ function App() {
 
   useEffect(() => {
     dispatch(fetchAuthMe(isAuth))
-  }, [rows])
+    rerender()
+  }, [])
 
   return (
     <>
@@ -49,6 +49,7 @@ function App() {
         rerender={rerender}
         isAuth={isAuth}
         logout={logout}
+        dispatch={dispatch}
       />
       <Container maxWidth="lg">
         <Routes>
@@ -58,10 +59,11 @@ function App() {
               <Home
                 setChecked={setChecked}
                 rows={rows}
-                rerender={rerender}
                 isAuth={isAuth}
                 isBlock={isBlock}
                 token={token}
+                logout={logout}
+                rerender={rerender}
               />
             }
           />
